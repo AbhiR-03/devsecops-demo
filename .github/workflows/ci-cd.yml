@@ -182,7 +182,13 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git pull origin main --rebase || echo "Nothing to pull"
+      
           git add kubernetes/deployment.yaml
           git commit -m "Update Kubernetes deployment with new image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
+      
+          # Pull the latest remote commits
+          git fetch origin main
+          git rebase origin/main || git rebase --skip || echo "Rebase already done or nothing to rebase"
+      
+          # Push the result
           git push origin main
